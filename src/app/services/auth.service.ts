@@ -1,59 +1,55 @@
-import {computed, effect, inject, Injectable, signal} from "@angular/core";
-import {User} from "../models/user.model";
-import {environment} from "../../environments/environment";
-import {Router} from "@angular/router";
+import { computed, effect, inject, Injectable, signal } from "@angular/core";
+import { User } from "../models/user.model";
 import { HttpClient } from "@angular/common/http";
-import {firstValueFrom} from "rxjs";
+import { Router } from "@angular/router";
+import { Observable, tap } from "rxjs";
 
-const USER_STORAGE_KEY = 'user';
+const USER_STORAGE_KEY = "user";
+
+type LoginCredentials = {
+  email: string;
+  password: string;
+};
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
 
-  #userSignal = signal<User | null>(null);
-
-  user = this.#userSignal.asReadonly();
-
+  private userSignal = signal<User|null>(this.loadUserFromStorage());
   isLoggedIn = computed(() => !!this.user());
-
-  http = inject(HttpClient);
-
-  router = inject(Router);
+  user = this.userSignal.asReadonly();
 
   constructor() {
-    this.loadUserFromStorage();
+    // Persist user to localStorage whenever it changes
     effect(() => {
       const user = this.user();
-      if (user) {
-        localStorage.setItem(USER_STORAGE_KEY,
-          JSON.stringify(user));
+      if ( user ) {
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+      } else {
+        localStorage.removeItem(USER_STORAGE_KEY);
       }
     });
   }
 
-  loadUserFromStorage() {
-    const json = localStorage.getItem(USER_STORAGE_KEY);
-    if (json) {
-      const user = JSON.parse(json);
-      this.#userSignal.set(user);
-    }
+  login(credentials: LoginCredentials): Observable<User> {
+    return this.http.post<User>("http://localhost:9001/api/login", credentials).pipe(
+      tap((user) => {
+        this.userSignal.set(user);
+        this.router.navigate(["/"]);
+      })
+    );
   }
 
-  async login(email:string, password:string): Promise<User> {
-    const login$ = this.http.post<User>(`${environment.apiRoot}/login`, {
-      email,
-      password});
-    const user = await firstValueFrom(login$);
-    this.#userSignal.set(user);
-    return user;
+  logout(): void {
+    this.userSignal.set(null);
+    this.router.navigate(["/login"]);
   }
 
-  async logout() {
-    localStorage.removeItem(USER_STORAGE_KEY);
-    this.#userSignal.set(null);
-    await this.router.navigateByUrl('/login');
+  private loadUserFromStorage(): User|null {
+    const userJson = localStorage.getItem(USER_STORAGE_KEY);
+    return userJson ? JSON.parse(userJson) : null;
   }
-
 }

@@ -1,10 +1,12 @@
-import {ApplicationConfig} from '@angular/core';
-import {provideRouter} from '@angular/router';
+import { ApplicationConfig, isDevMode } from "@angular/core";
+import { provideRouter } from "@angular/router";
 
-import {routes} from './app.routes';
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import { routes } from "./app.routes";
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideHttpClient, withFetch, withInterceptors } from "@angular/common/http";
-import {loadingInterceptor} from "./services/loading.interceptor";
+import { provideStore } from "@ngrx/store";
+import { provideStoreDevtools } from "@ngrx/store-devtools";
+import { loadingInterceptor } from "./loading/loading.interceptor";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,9 +14,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([
-        //loadingInterceptor
-      ])
-    )
+      withInterceptors([loadingInterceptor])
+    ),
+    provideStore(),
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })
   ]
 };

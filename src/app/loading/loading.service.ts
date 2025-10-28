@@ -1,23 +1,17 @@
-import { inject, Injectable, signal} from "@angular/core";
-import { Router } from "@angular/router";
+import {Injectable, signal} from "@angular/core";
 
 @Injectable({
   providedIn: "root",
 })
 export class LoadingService {
+  private loadingCountSignal = signal(0);
+  loading = this.loadingCountSignal.asReadonly();
 
-  #loadingSignal = signal(false);
-  loading = this.#loadingSignal.asReadonly();
-
-  router = inject(Router);
-
-
-  loadingOn() {
-    this.#loadingSignal.set(true);
+  showLoader(): void {
+    this.loadingCountSignal.update(count => count + 1);
   }
 
-  loadingOff() {
-    this.#loadingSignal.set(false);
+  hideLoader(): void {
+    this.loadingCountSignal.update(count => Math.max(0, count - 1));
   }
-
 }

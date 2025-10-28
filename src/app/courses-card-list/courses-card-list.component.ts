@@ -1,46 +1,40 @@
-import {Component, inject, input, output} from '@angular/core';
-import {RouterLink} from "@angular/router";
-import {Course} from "../models/course.model";
-import {MatDialog} from "@angular/material/dialog";
-import {openEditCourseDialog} from "../edit-course-dialog/edit-course-dialog.component";
-import {firstValueFrom} from "rxjs";
+import { Component, input, InputSignal, output } from "@angular/core";
+import { Course } from "../models/course.model";
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle
+} from "@angular/material/card";
 
 @Component({
-    selector: 'courses-card-list',
-    imports: [
-        RouterLink
-    ],
-    templateUrl: './courses-card-list.component.html',
-    styleUrl: './courses-card-list.component.scss'
+  selector: "courses-card-list",
+  imports: [
+    MatCard,
+    MatCardHeader,
+    MatCardTitle,
+    MatCardSubtitle,
+    MatCardContent,
+    MatCardActions
+  ],
+  templateUrl: "./courses-card-list.component.html",
+  styleUrl: "./courses-card-list.component.scss"
 })
 export class CoursesCardListComponent {
 
-  courses = input.required<Course[]>();
+  editCourseEvent = output<Course>();
+  deleteCourseEvent = output<Course>();
+  viewCourseEvent = output<Course>();
 
-  courseUpdated = output<Course>();
+  courses: InputSignal<Course[]> = input.required<Course[]>();
 
-  courseDeleted = output<string>();
-
-  dialog = inject(MatDialog);
-
-  async onEditCourse(course: Course) {
-    const newCourse = await openEditCourseDialog(
-      this.dialog,
-      {
-        mode: "update",
-        title: "Update Existing Course",
-        course
-      }
-    )
-    if (!newCourse) {
-      return;
-    }
-    console.log(`Course edited:`, newCourse);
-    this.courseUpdated.emit(newCourse);
+  editCourse(course: Course): void {
+    this.editCourseEvent.emit(course);
   }
 
-  onCourseDeleted(course: Course) {
-    this.courseDeleted.emit(course.id);
+  viewCourse(course: Course) {
+    this.viewCourseEvent.emit(course);
   }
-
 }

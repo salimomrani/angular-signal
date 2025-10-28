@@ -14,39 +14,34 @@ import {FormBuilder, ReactiveFormsModule} from "@angular/forms";
     styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private messagesService = inject(MessagesService);
 
-  fb = inject(FormBuilder);
-
-  form = this.fb.group({
+  loginForm = this.fb.nonNullable.group({
     email: [''],
     password: ['']
   });
 
-  messagesService = inject(MessagesService);
+  onLogin(): void {
+    const { email, password } = this.loginForm.getRawValue();
 
-  authService = inject(AuthService);
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
 
-  router = inject(Router);
+    if (!trimmedEmail || !trimmedPassword) {
+      this.messagesService.showMessage('Please enter both email and password', 'error');
+      return;
+    }
 
-  async onLogin() {
-    try {
-      const {email, password} = this.form.value;
-      if (!email || !password) {
-        this.messagesService.showMessage(
-          "Enter an email and password.",
-          "error"
-        )
-        return;
+    this.authService.login({ email: trimmedEmail, password: trimmedPassword }).subscribe({
+      next: () => {
+        this.messagesService.showMessage('Login successful!', 'success');
+      },
+      error: (err) => {
+        console.error('Login error:', err);
+        this.messagesService.showMessage('Login failed. Please check your credentials.', 'error');
       }
-      await this.authService.login(email, password);
-      await this.router.navigate(['/home']);
-    }
-    catch(err) {
-      console.error(err);
-      this.messagesService.showMessage(
-        "Login failed, please try again",
-        "error"
-      )
-    }
+    });
   }
 }

@@ -7,16 +7,10 @@ import {NgClass} from "@angular/common";
     templateUrl: './messages.component.html',
     styleUrls: ['./messages.component.scss'],
     imports: [
-        NgClass
+
     ]
 })
 export class MessagesComponent {
 
-  messagesService = inject(MessagesService);
 
-  message = this.messagesService.message;
-
-  onClose() {
-    this.messagesService.clear();
-  }
 }

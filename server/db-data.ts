@@ -975,11 +975,19 @@ export function findCourseById(courseId: number) {
 
 export function authenticate(email: string, password: string) {
 
+  console.log('authenticate called with:', { email, password });
+  console.log('USERS object:', USERS);
+  console.log('Object.values(USERS):', Object.values(USERS));
+
   const user: any = Object.values(USERS).find(user => user.email === email);
 
+  console.log('Found user:', user);
+
   if (user && user.password == password) {
+    console.log('Password match!');
     return user;
   } else {
+    console.log('No match - user:', user, 'password match:', user?.password == password);
     return undefined;
   }
 

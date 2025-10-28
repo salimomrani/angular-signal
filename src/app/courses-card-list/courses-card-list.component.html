@@ -1,23 +1,17 @@
-
-@for(course of courses(); track course.id) {
-  <div class="course-card">
-    <div class="course-header">
-      <span class="course-title">{{course.title}}</span>
-    </div>
-    <img class="course-image" [src]="course.iconUrl">
-    <div class="course-description">
-      <p>{{course.longDescription}}</p>
-    </div>
-    <div class="course-actions">
-      <button class="btn"
-              [routerLink]="['courses', course.id]" >
-        VIEW COURSE
-      </button>
-      <button class="btn" (click)="onEditCourse(course)">
-        EDIT
-      </button>
-      <img class="delete" src="/assets/icons/delete.svg"
-        (click)="onCourseDeleted(course)">
-    </div>
-  </div>
+@for (course of courses(); track course.id) {
+  <mat-card class="course-card">
+    <mat-card-header>
+      <mat-card-title>{{ course.title }}</mat-card-title>
+      <mat-card-subtitle>{{ course.category }}</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image [src]="course.iconUrl" alt="{{ course.title }}">
+    <mat-card-content>
+      <p>{{ course.longDescription }}</p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="viewCourse(course)">VIEW</button>
+      <button mat-button (click)="editCourse(course)">EDIT</button>
+    </mat-card-actions>
+  </mat-card>
 }
+
