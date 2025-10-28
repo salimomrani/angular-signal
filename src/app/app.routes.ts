@@ -1,14 +1,16 @@
-import {Routes} from '@angular/router';
-import {HomeComponent} from "./home/home.component";
-import {LoginComponent} from "./login/login.component";
-import {LessonsComponent} from "./lessons/lessons.component";
-import {ResourceDemoComponent} from "./resource-demo/resource-demo.component";
-import {LinkedSignalDemoComponent} from "./linked-signal/linked-signal-demo.component";
+import { Routes } from "@angular/router";
+import { HomeComponent } from "./home/home.component";
+import { LoginComponent } from "./login/login.component";
+import { LessonsComponent } from "./lessons/lessons.component";
+import { ResourceDemoComponent } from "./resource-demo/resource-demo.component";
+import { LinkedSignalDemoComponent } from "./linked-signal/linked-signal-demo.component";
+import { authGuard } from "./guards/auth.guard";
 
 export const routes: Routes = [
   {
-    path: '',
-    component: HomeComponent
+    path: "",
+    component: HomeComponent,
+    canActivate: [authGuard]
   },
   {
     path: "login",
@@ -16,18 +18,21 @@ export const routes: Routes = [
   },
   {
     path: "lessons",
-    component: LessonsComponent
+    component: LessonsComponent,
+    canActivate: [authGuard]
   },
   {
-    path:"shopping-cart",
-    component: LinkedSignalDemoComponent
+    path: "shopping-cart",
+    component: LinkedSignalDemoComponent,
+    canActivate: [authGuard]
   },
   {
     path: "resource-demo",
-    component: ResourceDemoComponent
+    component: ResourceDemoComponent,
+    canActivate: [authGuard]
   },
   {
-    path: '**',
-    redirectTo: '/'
+    path: "**",
+    redirectTo: "/"
   }
 ];

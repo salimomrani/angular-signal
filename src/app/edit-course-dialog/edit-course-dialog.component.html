@@ -1,23 +1,23 @@
 <loading/>
 
-<div class="edit-course-form">
+<div class="edit-course-form" [formGroup]="form">
 
-  <h3></h3>
+  <h3>{{ data.title }}</h3>
 
   <div class="form-control">
-    <label>Course title:</label>
-    <input placeholder="Enter course title">
+    <label for="course-title">Course title:</label>
+    <input id="course-title" placeholder="Enter course title" formControlName="title" [readonly]="data.mode === 'view'">
   </div>
 
   <div class="form-control">
-    <label>Course description:</label>
-    <textarea placeholder="Enter course description">
+    <label for="course-description">Course description:</label>
+    <textarea id="course-description" placeholder="Enter course description" formControlName="description" [readonly]="data.mode === 'view'">
     </textarea>
   </div>
 
   <div class="form-control">
-    <label>Course category:</label>
-    <select>
+    <label for="course-category">Course category:</label>
+    <select id="course-category" formControlName="category" [disabled]="data.mode === 'view'" [class.readonly]="data.mode === 'view'">
       <option value="BEGINNER">Beginners</option>
       <option value="INTERMEDIATE">Intermediate</option>
       <option value="ADVANCED">Advanced</option>
@@ -25,18 +25,20 @@
   </div>
 
   <div class="form-control">
-    <label>Course image:</label>
-    <input placeholder="Enter course title">
+    <label for="course-image">Course image:</label>
+    <input id="course-image" placeholder="Enter course image URL" formControlName="iconUrl" [readonly]="data.mode === 'view'">
   </div>
 
   <div class="form-actions">
 
-    <button class="btn">
-      Save
-    </button>
+    @if (data.mode !== 'view') {
+      <button class="btn" (click)="saveCourse()">
+        Save
+      </button>
+    }
 
-    <button class="btn">
-      Cancel
+    <button class="btn" (click)="onNoClick()">
+      {{ data.mode === 'view' ? 'Close' : 'Cancel' }}
     </button>
 
   </div>

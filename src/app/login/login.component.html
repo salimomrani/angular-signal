@@ -1,25 +1,25 @@
 <div class="login">
 
-  <div class="login-form">
+  <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
 
     <h3>Login</h3>
 
     <div class="form-control">
-      <label>Email:</label>
-      <input placeholder="Enter your email">
+      <label for="login-email">Email:</label>
+      <input id="login-email" formControlName="email" placeholder="Enter your email">
     </div>
 
     <div class="form-control">
-      <label>Password:</label>
-      <input type="password" placeholder="Enter your password">
+      <label for="login-password">Password:</label>
+      <input id="login-password" type="password" formControlName="password" placeholder="Enter your password">
     </div>
 
-  </div>
+  </form>
 
   <div class="form-actions">
     <button class="btn" routerLink="/home">Home</button>
 
-    <button class="btn">
+    <button class="btn" type="submit" (click)="onLogin()">
       Login
     </button>
 

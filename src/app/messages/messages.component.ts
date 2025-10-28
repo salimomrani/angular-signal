@@ -7,7 +7,7 @@ import {NgClass} from "@angular/common";
     templateUrl: './messages.component.html',
     styleUrls: ['./messages.component.scss'],
     imports: [
-        NgClass
+
     ]
 })
 export class MessagesComponent {

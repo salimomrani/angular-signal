@@ -11,7 +11,7 @@ export type Course = {
   courseListIcon: string;
   category: CourseCategory;
   lessonsCount: number;
-}
+};
 
 
 export function sortCoursesBySeqNo(c1: Course, c2: Course) {
