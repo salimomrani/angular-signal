@@ -1,22 +1,85 @@
-<div class="lesson-detail">
+@if (loading()) {
+  <div class="loading-container">
+    <p>Loading lesson...</p>
+  </div>
+} @else if (getLesson()) {
+  <div class="lesson-detail">
+    <h1>Edit Lesson #{{ getLesson()!.seqNo }}</h1>
 
-  <h1>Edit Lesson</h1>
+    <form [formGroup]="form" (ngSubmit)="onSave()" class="lesson-form">
+      <div class="form-group">
+        <label for="description">Lesson Description:</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="4"
+          placeholder="Enter lesson description"
+          class="form-control"
+        ></textarea>
+        @if (form.controls.description.invalid && form.controls.description.touched) {
+          <div class="error-message">
+            Description is required
+          </div>
+        }
+      </div>
 
-  <div class="form-control edit-lesson">
-    <label>Lesson title:</label>
-    <input placeholder="Enter course title">
+      <div class="form-group">
+        <label for="duration">Duration:</label>
+        <input
+          id="duration"
+          type="text"
+          formControlName="duration"
+          placeholder="e.g. 5:30"
+          class="form-control"
+        />
+        @if (form.controls.duration.invalid && form.controls.duration.touched) {
+          <div class="error-message">
+            Duration is required
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="videoId">Video ID (optional):</label>
+        <input
+          id="videoId"
+          type="text"
+          formControlName="videoId"
+          placeholder="Enter video ID"
+          class="form-control"
+        />
+      </div>
+
+      <div class="lesson-info">
+        <p><strong>Course ID:</strong> {{ getLesson()!.courseId }}</p>
+        <p><strong>Sequence:</strong> {{ getLesson()!.seqNo }}</p>
+      </div>
+    </form>
   </div>
 
-</div>
+  <div class="form-actions">
+    <button
+      class="btn btn-primary"
+      (click)="onSave()"
+      [disabled]="form.invalid || saving()"
+    >
+      @if (saving()) {
+        <span>Saving...</span>
+      } @else {
+        <span>Save</span>
+      }
+    </button>
 
-<div class="form-actions">
-
-  <button class="btn" >
-    Save
-  </button>
-
-  <button class="btn">
-    Cancel
-  </button>
-
-</div>
+    <button
+      class="btn btn-secondary"
+      (click)="onCancel()"
+      [disabled]="saving()"
+    >
+      Cancel
+    </button>
+  </div>
+} @else {
+  <div class="no-lesson">
+    <p>No lesson to edit</p>
+  </div>
+}

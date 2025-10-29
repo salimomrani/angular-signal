@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HomeComponent } from './home.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { courseStore } from '../services/course-store';
+import { courseStore } from '../services/course.store';
 import { Course } from '../models/course.model';
 import { of, Subject } from 'rxjs';
 import { signal } from '@angular/core';
