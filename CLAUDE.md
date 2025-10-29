@@ -67,31 +67,59 @@ ng test --include='**/your-file.spec.ts'
 
 This codebase demonstrates **signal stores** using `@ngrx/signals`, which is the modern alternative to traditional NgRx store patterns:
 
-- **Signal Stores**: Defined using `signalStore()` from `@ngrx/signals` (see `src/app/services/course-store.ts`)
+- **Signal Stores**: Defined using `signalStore()` from `@ngrx/signals` (see `src/app/services/course.store.ts`)
   - `withState()`: Define state shape
   - `withComputed()`: Computed signals (derived state)
   - `withMethods()`: Actions and state mutations via `patchState()`
   - `withHooks()`: Lifecycle hooks (e.g., `onInit`)
   - `rxMethod()`: Reactive methods that handle async operations with RxJS operators
+  - withProps() : to inject dependencies like services
 
-Example pattern from `course-store.ts`:
+Example pattern from `course.store.ts`:
 
 ```typescript
 export const courseStore = signalStore(
   withState(initialState),
   withComputed(({ courses }) => ({
-    beginnersCourses: computed(() => courses().filter(...)),
-    advancedCourses: computed(() => courses().filter(...))
+    beginnersCourses: computed(() => courses().filter(course => course.category === "BEGINNER")),
+    advancedCourses: computed(() => courses().filter(course => course.category === "ADVANCED"))
   })),
-  withMethods(({ ...store }) => ({
-    loadCourses: rxMethod<void>(
+  withProps(() => ({
+    courseService: inject(CoursesService)
+  })),
+  withMethods(({ courseService, ...store }) => {
+    const loadCourses = rxMethod<void>(
       pipe(
-        tap(() => patchState(store, { loading: true })),
-        switchMap(() => service.getCourse$().pipe(...))
+        switchMap(() =>
+          courseService.getCourse$().pipe(
+            tap((courses) => patchState(store, { courses }))
+          )
+        )
       )
-    )
-  })),
-  withHooks({ onInit({ loadCourses }) { loadCourses(); } })
+    );
+
+    const updateCourse = rxMethod<{ courseId: string; changes: Partial<Course> }>(
+      pipe(
+        switchMap(({ courseId, changes }) =>
+          courseService.updateCourse$(courseId, changes).pipe(
+            tap((updatedCourse) => {
+              const courses = store.courses().map(course =>
+                course.id === courseId ? updatedCourse : course
+              );
+              patchState(store, { courses });
+            })
+          )
+        )
+      )
+    );
+
+    return { loadCourses, updateCourse };
+  }),
+  withHooks({
+    onInit({ loadCourses }) {
+      loadCourses();
+    }
+  })
 );
 ```
 
@@ -115,12 +143,14 @@ export const courseStore = signalStore(
 Two types of services exist in the codebase:
 
 1. **Traditional Services** (`src/app/services/*.service.ts`):
-  - HTTP communication services (e.g., `CoursesService`, `LessonsService`)
-  - Injectable with `providedIn: 'root'`
+
+- HTTP communication services (e.g., `CoursesService`, `LessonsService`)
+- Injectable with `providedIn: 'root'`
 
 2. **Signal-based Services** (`src/app/loading/loading.service.ts`, `src/app/messages/messages.service.ts`):
-  - Use Angular signals for reactive state
-  - Lighter weight alternative to signal stores for simple state
+
+- Use Angular signals for reactive state
+- Lighter weight alternative to signal stores for simple state
 
 ### Backend REST API
 

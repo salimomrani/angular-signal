@@ -1,5 +1,64 @@
 <div class="lessons">
+  <h2>Search Lessons</h2>
 
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search for lessons..."
+      [value]="searchInput()"
+      (input)="onSearch($event)"
+      class="search-input"
+    />
+    @if (searchInput()) {
+      <button class="clear-btn" (click)="clearSearch()">Clear</button>
+    }
+  </div>
 
+  @if (store.isLoading()) {
+    <div class="loading">
+      <p>Loading lessons...</p>
+    </div>
+  }
+
+  @if (store.error()) {
+    <div class="error">
+      <p>{{ store.error() }}</p>
+    </div>
+  }
+
+  @if (store.hasLessons() && !store.isLoading()) {
+    <div class="lessons-results">
+      <p class="results-count">Found {{ store.lessonsCount() }} lesson(s)</p>
+
+      <div class="lessons-list">
+        @for (lesson of store.lessons(); track lesson.id) {
+          <div class="lesson-card" (click)="onLessonClick(lesson)">
+            <div class="lesson-header">
+              <span class="lesson-seq">{{ lesson.seqNo }}</span>
+              <h3 class="lesson-title">{{ lesson.description }}</h3>
+            </div>
+            <div class="lesson-details">
+              <span class="lesson-duration">Duration: {{ lesson.duration }}</span>
+              @if (lesson.videoId) {
+                <span class="lesson-video">Video ID: {{ lesson.videoId }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (!store.hasLessons() && !store.isLoading() && searchInput()) {
+    <div class="no-results">
+      <p>No lessons found for "{{ searchInput() }}". Try a different search term.</p>
+    </div>
+  }
+
+  @if (!searchInput()) {
+    <div class="empty-state">
+      <p>Enter a search term to find lessons</p>
+    </div>
+  }
 </div>
 

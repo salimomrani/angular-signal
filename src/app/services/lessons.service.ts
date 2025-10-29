@@ -16,15 +16,34 @@ export class LessonsService {
    * Récupère les lessons depuis l'API.
    * Retourne une Promise résolue avec le tableau de Lesson.
    */
-  getLessons(search?: string): Promise<Lesson[]> {
-    const query = search ? `?search=${encodeURIComponent(search)}` : '';
+  async getLessons(search?: string): Promise<Lesson[]> {
+    if (!search || search.trim() === '') {
+      return [];
+    }
+
+    const query = `?query=${encodeURIComponent(search)}`;
 
     const rawBase = (environment as { apiUrl?: string }).apiUrl ?? '';
     const base = rawBase ? String(rawBase).trim().replace(/\/+$/,'') : '';
 
-    const path = `/api/lessons${query}`;
+    const path = `/api/search-lessons${query}`;
     const url = base ? `${base}${path}` : path;
 
-    return firstValueFrom(this.http.get<Lesson[]>(url));
+    const response = await firstValueFrom(this.http.get<{ lessons: Lesson[] }>(url));
+    return response.lessons || [];
+  }
+
+  /**
+   * Met à jour une lesson existante.
+   * Retourne une Promise résolue avec la Lesson mise à jour.
+   */
+  async updateLesson(lessonId: string, changes: Partial<Lesson>): Promise<Lesson> {
+    const rawBase = (environment as { apiUrl?: string }).apiUrl ?? '';
+    const base = rawBase ? String(rawBase).trim().replace(/\/+$/,'') : '';
+
+    const path = `/api/lessons/${lessonId}`;
+    const url = base ? `${base}${path}` : path;
+
+    return firstValueFrom(this.http.put<Lesson>(url, changes));
   }
 }

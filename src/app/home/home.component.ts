@@ -5,7 +5,7 @@ import { CoursesCardListComponent } from "../courses-card-list/courses-card-list
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { EditCourseDialogComponent } from "../edit-course-dialog/edit-course-dialog.component";
 import { EditCourseDialogData } from "../edit-course-dialog/edit-course-dialog.data.model";
-import { courseStore } from "../services/course-store";
+import { courseStore } from "../services/course.store";
 
 @Component({
   selector: "home",
